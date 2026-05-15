@@ -27,6 +27,11 @@ export type WordRow = {
   data: WordData;
 };
 
+export type Mnemonic = {
+  type: string; // root_affix / homophone / image / story 等
+  content: string;
+};
+
 export type WordData = {
   word: string;
   pronunciation_us?: string;
@@ -35,7 +40,7 @@ export type WordData = {
   core_meanings?: Array<{ pos: string; definition: string }>;
   slang_meanings?: Array<{ context: string; definition: string; note?: string }>;
   example?: { text: string; translation: string; source_style?: string };
-  mnemonic?: string | null;
+  mnemonic?: Mnemonic | string | null;
   associations?: {
     synonyms?: string[];
     antonyms?: string[];
