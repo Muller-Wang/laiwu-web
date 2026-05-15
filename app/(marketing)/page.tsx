@@ -119,7 +119,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-sm font-medium mb-6"
           >
             <Sparkles className="w-4 h-4" />
-            北京外国语大学 · 大学生创新创业训练计划
+            为雅思考生与海外华人打造
           </motion.div>
 
           <motion.h1
@@ -247,8 +247,8 @@ export default function HomePage() {
               {
                 icon: Users,
                 color: "from-emerald-400 to-teal-600",
-                title: "跨学科团队",
-                desc: "北外、人大、南大成员，横跨语言学、计算机、口译、商管。语言学专业逻辑 × AI 技术应用 × 产品思维的有机融合。",
+                title: "跨学科专业力",
+                desc: "语言学专业逻辑 × AI 技术应用 × 产品思维的有机融合。横跨语言学、计算机科学、英语口译与工商管理的跨领域协作。",
                 badge: "团队优势",
               },
             ].map((card, i) => (

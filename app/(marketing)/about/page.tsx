@@ -51,13 +51,13 @@ const INNOVATIONS = [
   },
   {
     icon: Users,
-    title: "跨学科团队优势",
+    title: "跨学科专业力",
     color: "from-emerald-400 to-teal-600",
     points: [
-      "团队来自北京外国语大学、中国人民大学、南京大学",
-      "专业横跨波兰语、计算机科学、英语口译、工商管理",
+      "核心成员横跨语言学、计算机科学、英语口译、工商管理",
       "语言学专业素养 × AI 技术应用 × 产品思维的有机融合",
-      "依托北外深厚的外语教育学科资源，从习得规律双视角设计内容",
+      "从英语习得规律与跨文化交际双重视角设计内容",
+      "兼具学术深度与产品打磨能力，每条词条经多轮人工抽检",
     ],
   },
 ];
@@ -94,7 +94,7 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-sm font-medium mb-6">
             <Award className="w-4 h-4" />
-            北京外国语大学 · 大学生创新创业训练计划
+            重新定义 AI 时代的英语词汇学习
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
             让单词学习从机械记忆
@@ -105,7 +105,7 @@ export default function AboutPage() {
             </span>
           </h1>
           <p className="mt-6 text-lg text-[color:var(--color-text-muted)] max-w-2xl mx-auto leading-relaxed">
-            项目编号 20251003002S · 国际商学院立项 · 2024 年 9 月启动
+            鲜活语料 · 多元巧记 · 熟词生义 —— 一本面向 AI 时代的雅思核心词书
           </p>
         </div>
       </section>
@@ -115,7 +115,7 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 text-xs font-bold text-brand-600 uppercase tracking-wider mb-4">
             <Quote className="w-3.5 h-3.5" />
-            项目背景
+            产品故事
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">
             来自对传统词书三大痛点的深刻洞察
@@ -134,8 +134,9 @@ export default function AboutPage() {
               学习者掌握单词基础义却在实际使用中频繁出错，尤其影响口语考试中的理解与表达。
             </p>
             <p className="pt-2 text-[color:var(--color-text-muted)]">
-              "来悟单词书"以人工智能大语言模型为技术底座，以雅思备考人群及广大英语学习者为核心用户，
-              定位"中国本土版柯林斯词典"，强调产品思维与用户中心理念。
+              「来悟单词书」以多模型协作的 AI 内容生产管线为技术底座，
+              服务雅思备考人群与广大英语学习者，定位「中国本土版柯林斯词典」，
+              强调产品思维与用户中心理念。
             </p>
           </div>
         </div>
@@ -272,7 +273,7 @@ export default function AboutPage() {
               </Link>
             </div>
             <p className="mt-8 text-xs text-white/60">
-              © 2026 来悟单词书 · 北京外国语大学国际商学院 · 项目编号 20251003002S
+              © 2026 来悟单词书 · 让单词学习从机械记忆走向真正理解
             </p>
           </div>
         </div>

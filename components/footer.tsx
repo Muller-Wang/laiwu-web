@@ -19,9 +19,9 @@ export function Footer() {
               鲜活例句 + 多元巧记法 + 熟词生义标注。
             </p>
             <p className="mt-4 text-xs text-[color:var(--color-text-muted)]">
-              北京外国语大学 · 2025 年度大学生创新创业训练计划
+              为雅思考生与海外华人打造
               <br />
-              项目编号 20251003002S
+              让单词学习从机械记忆走向真正理解
             </p>
           </div>
 
@@ -41,7 +41,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/about" className="hover:text-brand-600 transition-colors">
-                  关于项目
+                  关于
                 </Link>
               </li>
             </ul>
@@ -62,14 +62,14 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Globe className="w-4 h-4" />
-                <span>北外大创项目</span>
+                <span>laiwu-web.vercel.app</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-10 pt-6 border-t border-[color:var(--color-border)] flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-[color:var(--color-text-muted)]">
-          <span>© 2026 来悟单词书 · 国际商学院</span>
+          <span>© 2026 来悟单词书</span>
           <span>Made with care for English learners.</span>
         </div>
       </div>
