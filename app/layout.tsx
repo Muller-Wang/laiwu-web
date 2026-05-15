@@ -9,6 +9,7 @@ import "@fontsource/noto-sans-sc/700.css";
 import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
+import { ToastProvider } from "@/components/toast";
 
 export const metadata: Metadata = {
   title: "来悟单词书 · 中国本土版柯林斯词典",
@@ -27,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-[color:var(--color-bg)] text-[color:var(--color-text)] font-sans">
-        <Nav />
-        <main className="flex-1 flex flex-col">{children}</main>
-        <Footer />
+        <ToastProvider>
+          <Nav />
+          <main className="flex-1 flex flex-col">{children}</main>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );
