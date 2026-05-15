@@ -111,7 +111,7 @@ export default function HomePage() {
         />
         <FloatingWords />
 
-        <div className="max-w-7xl mx-auto w-full text-center relative z-10 py-20">
+        <div className="max-w-5xl mx-auto text-center relative z-10 py-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -126,7 +126,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-extrabold tracking-tight leading-[0.95] text-[clamp(4rem,14vw,13rem)]"
+            className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.05]"
           >
             来悟
             <span className="bg-gradient-to-r from-brand-500 via-brand-600 to-brand-700 bg-clip-text text-transparent">

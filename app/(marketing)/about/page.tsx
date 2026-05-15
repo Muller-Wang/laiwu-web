@@ -91,12 +91,12 @@ export default function AboutPage() {
               "radial-gradient(ellipse at top, var(--color-brand-100), transparent 60%)",
           }}
         />
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto w-full text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-sm font-medium mb-6">
             <Award className="w-4 h-4" />
             重新定义 AI 时代的英语词汇学习
           </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+          <h1 className="font-extrabold tracking-tight leading-[1.05] text-[clamp(2.5rem,7vw,8.5rem)]">
             让单词学习从机械记忆
             <br />
             走向真正
@@ -104,7 +104,7 @@ export default function AboutPage() {
               理解与运用
             </span>
           </h1>
-          <p className="mt-6 text-lg text-[color:var(--color-text-muted)] max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-8 text-lg md:text-xl text-[color:var(--color-text-muted)] max-w-2xl mx-auto leading-relaxed">
             鲜活语料 · 多元巧记 · 熟词生义 —— 一本面向 AI 时代的雅思核心词书
           </p>
         </div>
