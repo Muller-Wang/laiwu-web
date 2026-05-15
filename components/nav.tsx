@@ -1,0 +1,116 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Menu, X, BookOpen } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+const NAV_ITEMS = [
+  { href: "/wordbook", label: "词库" },
+  { href: "/study", label: "学习计划" },
+  { href: "/about", label: "关于" },
+];
+
+export function Nav() {
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  return (
+    <header className="sticky top-0 z-50 w-full bg-[color:var(--color-bg)]/85 backdrop-blur-md border-b border-[color:var(--color-border)]">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 group"
+          onClick={() => setOpen(false)}
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+            <BookOpen className="w-5 h-5 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="font-bold text-lg tracking-tight">来悟单词书</span>
+        </Link>
+
+        {/* 桌面菜单 */}
+        <nav className="hidden md:flex items-center gap-1">
+          {NAV_ITEMS.map((item) => {
+            const active =
+              pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
+                  active
+                    ? "text-brand-700 bg-brand-50"
+                    : "text-[color:var(--color-text)] hover:bg-[color:var(--color-surface-2)]",
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+          <Link
+            href="/wordbook"
+            className="ml-3 px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold transition-colors shadow-sm hover:shadow-md"
+          >
+            进入词库
+          </Link>
+        </nav>
+
+        {/* 移动端汉堡 */}
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="md:hidden p-2 rounded-lg hover:bg-[color:var(--color-surface-2)]"
+          aria-label="menu"
+        >
+          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {/* 移动端展开层 */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden border-t border-[color:var(--color-border)] overflow-hidden"
+          >
+            <nav className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
+              {NAV_ITEMS.map((item) => {
+                const active = pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "px-4 py-3 rounded-xl text-base font-medium transition-colors",
+                      active
+                        ? "text-brand-700 bg-brand-50"
+                        : "hover:bg-[color:var(--color-surface-2)]",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+              <Link
+                href="/wordbook"
+                onClick={() => setOpen(false)}
+                className="mt-2 px-4 py-3 rounded-xl bg-brand-500 text-white text-center font-semibold"
+              >
+                进入词库
+              </Link>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
