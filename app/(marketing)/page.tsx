@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -35,7 +34,7 @@ function FloatingWords() {
           key={i}
           initial={{ opacity: 0, y: 20 }}
           animate={{
-            opacity: [0, 0.6, 0.4, 0.6],
+            opacity: [0, 1, 0.85, 1],
             y: [20, -10, 5, -8],
           }}
           transition={{
@@ -44,7 +43,7 @@ function FloatingWords() {
             repeat: Infinity,
             repeatType: "reverse",
           }}
-          className="absolute text-sm md:text-base font-semibold text-brand-600/40 select-none whitespace-nowrap"
+          className="absolute text-base md:text-lg font-bold text-brand-800 select-none whitespace-nowrap"
           style={{ left: w.x, top: w.y }}
         >
           {w.text}
@@ -151,27 +150,26 @@ export default function HomePage() {
       <section className="relative min-h-[88vh] flex items-center justify-center px-4 overflow-hidden">
         {/* 渐变背景（最底层）*/}
         <div
-          className="absolute inset-0 -z-20"
+          className="absolute inset-0"
           style={{
             background:
               "radial-gradient(ellipse at top, var(--color-brand-100), transparent 60%), radial-gradient(ellipse at bottom right, var(--color-accent-100), transparent 50%)",
           }}
         />
 
-        {/* 多语种字海封面（淡水印背景层）*/}
+        {/* 多语种字海封面（整张均匀，羽化 60% → opacity 0.4） */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 opacity-[0.10] pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_0%,transparent_70%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,black_0%,transparent_70%)]"
-        >
-          <Image
-            src="/cover-v2.png"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center select-none"
-          />
-        </div>
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "url('/cover-v2.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.05,
+            filter: "saturate(0.85)",
+          }}
+        />
 
         <FloatingWords />
 
@@ -237,10 +235,20 @@ export default function HomePage() {
             </Link>
           </motion.div>
         </div>
+
+        {/* 底部白色羽化层：让 Hero 平滑过渡到下方数字 section */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-40 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 60%, #ffffff 100%)",
+          }}
+        />
       </section>
 
       {/* ============ 数字 ============ */}
-      <section className="py-20 px-4 border-y border-[color:var(--color-border)] bg-white">
+      <section className="py-20 px-4 border-b border-[color:var(--color-border)] bg-white">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
           {STATS.map((stat, i) => (
             <motion.div

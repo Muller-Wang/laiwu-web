@@ -3,18 +3,9 @@
 import CalendarHeatmap from "react-calendar-heatmap";
 import { useEffect, useMemo, useState } from "react";
 import { useT } from "./i18n-provider";
+import type { SessionRow } from "@/lib/db";
 
-// 用确定性 PRNG 避免 hydration mismatch
-function mulberry32(seed: number) {
-  return function () {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-export function StudyHeatmap() {
+export function StudyHeatmap({ sessions = [] }: { sessions?: SessionRow[] }) {
   const [mounted, setMounted] = useState(false);
   const t = useT();
 
@@ -24,15 +15,21 @@ export function StudyHeatmap() {
     const end = new Date();
     const start = new Date(end);
     start.setDate(end.getDate() - 90);
-    const rand = mulberry32(20260515);
+
+    // 把所有 sessions 按日期聚合（同一天多次学习累加）
+    const counts = new Map<string, number>();
+    for (const s of sessions) {
+      const total = (s.learned_count ?? 0) + (s.reviewed_count ?? 0);
+      counts.set(s.date, (counts.get(s.date) ?? 0) + total);
+    }
+
     const vals: { date: string; count: number }[] = [];
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const r = rand();
-      const count = r < 0.15 ? 0 : Math.floor(r * 50) + 5;
-      vals.push({ date: d.toISOString().slice(0, 10), count });
+      const dateStr = d.toISOString().slice(0, 10);
+      vals.push({ date: dateStr, count: counts.get(dateStr) ?? 0 });
     }
     return { startDate: start, endDate: end, values: vals };
-  }, []);
+  }, [sessions]);
 
   if (!mounted) {
     return <div className="h-32 rounded-2xl bg-[color:var(--color-surface-2)] animate-pulse" />;

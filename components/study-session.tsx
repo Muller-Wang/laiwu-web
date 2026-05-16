@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Frown,
@@ -19,16 +19,18 @@ import { safeGet, cn } from "@/lib/utils";
 import { WordSpeaker } from "./word-speaker";
 import { useT } from "./i18n-provider";
 import type { DictKey } from "@/lib/i18n/dict";
+import { gradeWord, type Grade, describeNextDue } from "@/lib/fsrs";
+import { getProgress, putProgress, addSession } from "@/lib/db";
 
-type Rating = {
-  key: string;
+type RatingItem = {
+  key: Grade;
   labelKey: DictKey;
   hintKey: DictKey;
   color: string;
   icon: typeof Frown;
 };
 
-const RATINGS: Rating[] = [
+const RATINGS: RatingItem[] = [
   {
     key: "forget",
     labelKey: "session.rate.forget",
@@ -59,18 +61,61 @@ const RATINGS: Rating[] = [
   },
 ];
 
-export function StudySession({ words }: { words: WordRow[] }) {
+export function StudySession({
+  words,
+  planId = null,
+}: {
+  words: WordRow[];
+  planId?: number | null;
+}) {
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [done, setDone] = useState(false);
+  const [busy, setBusy] = useState(false);
   const t = useT();
+
+  // 会话计时与统计
+  const startedAtRef = useRef<number>(Date.now());
+  const learnedRef = useRef<number>(0);
+  const reviewedRef = useRef<number>(0);
 
   const total = words.length;
   const current = words[idx];
   const progress = ((idx + (flipped ? 1 : 0.5)) / total) * 100;
 
-  const rate = () => {
+  /** 评分：调用 FSRS 计算下次复习并写入 IndexedDB */
+  const rate = async (grade: Grade) => {
+    if (busy || !current) return;
+    setBusy(true);
+    try {
+      const prev = await getProgress(current.word);
+      const wasReview = prev != null && prev.state !== "new";
+      const { row } = gradeWord(prev, current.word, grade);
+      await putProgress(row);
+      if (wasReview) reviewedRef.current += 1;
+      else learnedRef.current += 1;
+    } catch (e) {
+      console.error("[study] grade failed", e);
+    } finally {
+      setBusy(false);
+    }
+
     if (idx + 1 >= total) {
+      // 完成时记录一次 session
+      try {
+        const duration = Math.round(
+          (Date.now() - startedAtRef.current) / 1000,
+        );
+        await addSession({
+          date: new Date().toISOString().slice(0, 10),
+          learned_count: learnedRef.current,
+          reviewed_count: reviewedRef.current,
+          duration_sec: duration,
+          plan_id: planId,
+        });
+      } catch (e) {
+        console.error("[study] session save failed", e);
+      }
       setDone(true);
     } else {
       setIdx(idx + 1);
@@ -82,6 +127,9 @@ export function StudySession({ words }: { words: WordRow[] }) {
     setIdx(0);
     setFlipped(false);
     setDone(false);
+    startedAtRef.current = Date.now();
+    learnedRef.current = 0;
+    reviewedRef.current = 0;
   };
 
   if (done) return <CompletionScreen total={total} onRestart={restart} />;
@@ -231,9 +279,10 @@ export function StudySession({ words }: { words: WordRow[] }) {
                 key={r.key}
                 whileTap={{ scale: 0.96 }}
                 whileHover={{ y: -2 }}
-                onClick={rate}
+                onClick={() => rate(r.key)}
+                disabled={busy}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1 px-4 py-4 rounded-2xl text-white font-bold shadow-lg transition-all",
+                  "flex flex-col items-center justify-center gap-1 px-4 py-4 rounded-2xl text-white font-bold shadow-lg transition-all disabled:opacity-60",
                   r.color,
                 )}
               >

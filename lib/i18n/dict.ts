@@ -242,6 +242,63 @@ export const dict = {
     "about.contact.enter": "进入词库",
     "about.contact.copy": "© 2026 来悟单词书 · 让单词学习从机械记忆走向真正理解",
 
+    // ====== 学习计划扩展 ======
+    "plan.create.title": "创建你的学习计划",
+    "plan.create.desc": "选择词库范围和完成天数，每日学习量将自动算出",
+    "plan.create.scope": "词库范围",
+    "plan.create.scope.freq1": "高频核心 · 约 2000 词",
+    "plan.create.scope.freq12": "高频 + 中频 · 约 4500 词",
+    "plan.create.scope.all": "全部 7000 词",
+    "plan.create.days": "完成天数",
+    "plan.create.daysLabel": "{{n}} 天",
+    "plan.create.daily": "每日学习量",
+    "plan.create.dailyValue": "约 {{n}} 词 / 天",
+    "plan.create.submit": "开始学习计划",
+    "plan.create.change": "更换计划",
+    "plan.dashboard.noPlan": "还没有学习计划",
+    "plan.dashboard.noPlanDesc":
+      "创建一个计划，AI 会帮你规划每天学多少词、何时复习",
+    "plan.dashboard.startBtn": "立即创建计划",
+    "plan.dashboard.today.allDone": "今日清单已完成 🎉 明天再来",
+
+    // ====== 测验 ======
+    "quiz.title": "单词测验",
+    "quiz.crumb": "测验",
+    "quiz.intro": "从已学词中抽取，多种题型混合，错题自动归档",
+    "quiz.start.mc_zh2en": "中 → 英 选择题",
+    "quiz.start.mc_en2zh": "英 → 中 选择题",
+    "quiz.start.spelling": "拼写题",
+    "quiz.start.dictation": "听写题",
+    "quiz.start.wrong": "错题专项",
+    "quiz.config.count": "题目数量",
+    "quiz.config.start": "开始测验",
+    "quiz.q.prompt.zh2en": "下面这个中文释义对应的单词是？",
+    "quiz.q.prompt.en2zh": "这个单词的中文释义是？",
+    "quiz.q.prompt.spelling": "根据中文释义和首字母提示，写出完整单词",
+    "quiz.q.prompt.dictation": "听音输入完整单词",
+    "quiz.q.play": "播放",
+    "quiz.q.submit": "提交",
+    "quiz.q.next": "下一题",
+    "quiz.q.correct": "✅ 答对了",
+    "quiz.q.wrong": "❌ 答错了，正确答案是",
+    "quiz.q.progress": "第 {{cur}} / {{total}} 题",
+    "quiz.done.title": "测验完成",
+    "quiz.done.score": "正确 {{correct}} / {{total}}",
+    "quiz.done.again": "再来一组",
+    "quiz.done.back": "返回测验中心",
+    "quiz.empty": "还没有可测验的单词。先去学一些再回来吧！",
+
+    // ====== 收藏 ======
+    "bookmark.add": "收藏",
+    "bookmark.remove": "取消收藏",
+    "bookmark.toastAdd": "已加入收藏",
+    "bookmark.toastRemove": "已取消收藏",
+    "bookmark.page.title": "我的收藏",
+    "bookmark.page.empty": "收藏夹是空的，去词库找喜欢的词收藏起来吧",
+
+    // ====== 搜索建议 ======
+    "search.suggestion": "你是不是要找：",
+
     // ====== 404 ======
     "notFound.title": "没找到这个词条",
     "notFound.desc": "可能是单词拼写有误，或这个词还没收录。",
@@ -510,6 +567,65 @@ export const dict = {
     "about.contact.enter": "Open Wordbook",
     "about.contact.copy":
       "© 2026 Laiwu Wordbook · From rote memorization to true understanding",
+
+    // ====== Plan ======
+    "plan.create.title": "Create your study plan",
+    "plan.create.desc":
+      "Pick a wordbook scope and a target duration. Daily quota auto-calculated.",
+    "plan.create.scope": "Wordbook scope",
+    "plan.create.scope.freq1": "High frequency core · ~2,000 words",
+    "plan.create.scope.freq12": "High + Medium frequency · ~4,500 words",
+    "plan.create.scope.all": "All 7,000 words",
+    "plan.create.days": "Target duration",
+    "plan.create.daysLabel": "{{n}} days",
+    "plan.create.daily": "Daily quota",
+    "plan.create.dailyValue": "~{{n}} words / day",
+    "plan.create.submit": "Start the plan",
+    "plan.create.change": "Change plan",
+    "plan.dashboard.noPlan": "No study plan yet",
+    "plan.dashboard.noPlanDesc":
+      "Create a plan and let AI schedule your daily quota and reviews",
+    "plan.dashboard.startBtn": "Create a plan now",
+    "plan.dashboard.today.allDone": "Today's list is done 🎉 See you tomorrow",
+
+    // ====== Quiz ======
+    "quiz.title": "Word Quiz",
+    "quiz.crumb": "Quiz",
+    "quiz.intro":
+      "Drawn from words you've already studied. Wrong answers are auto-archived.",
+    "quiz.start.mc_zh2en": "Multiple Choice · ZH → EN",
+    "quiz.start.mc_en2zh": "Multiple Choice · EN → ZH",
+    "quiz.start.spelling": "Spelling",
+    "quiz.start.dictation": "Dictation",
+    "quiz.start.wrong": "Wrong words drill",
+    "quiz.config.count": "Question count",
+    "quiz.config.start": "Start quiz",
+    "quiz.q.prompt.zh2en": "Which word matches this definition?",
+    "quiz.q.prompt.en2zh": "What does this word mean?",
+    "quiz.q.prompt.spelling": "Type the full word from the definition and first letter",
+    "quiz.q.prompt.dictation": "Listen and type the word",
+    "quiz.q.play": "Play",
+    "quiz.q.submit": "Submit",
+    "quiz.q.next": "Next",
+    "quiz.q.correct": "✅ Correct",
+    "quiz.q.wrong": "❌ Wrong, the answer was",
+    "quiz.q.progress": "Question {{cur}} / {{total}}",
+    "quiz.done.title": "Quiz Done",
+    "quiz.done.score": "Correct {{correct}} / {{total}}",
+    "quiz.done.again": "Another set",
+    "quiz.done.back": "Back to Quiz Center",
+    "quiz.empty": "No words to quiz yet. Study some first!",
+
+    // ====== Bookmarks ======
+    "bookmark.add": "Bookmark",
+    "bookmark.remove": "Unbookmark",
+    "bookmark.toastAdd": "Added to bookmarks",
+    "bookmark.toastRemove": "Removed from bookmarks",
+    "bookmark.page.title": "My Bookmarks",
+    "bookmark.page.empty": "No bookmarks yet. Browse the wordbook and save some favorites.",
+
+    // ====== Search suggestion ======
+    "search.suggestion": "Did you mean:",
 
     // ====== 404 ======
     "notFound.title": "Entry not found",
