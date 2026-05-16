@@ -46,6 +46,16 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/quiz" className="hover:text-brand-600 transition-colors">
+                  {t("nav.quiz")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/bookmarks" className="hover:text-brand-600 transition-colors">
+                  {t("bookmark.page.title")}
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className="hover:text-brand-600 transition-colors">
                   {t("nav.about")}
                 </Link>

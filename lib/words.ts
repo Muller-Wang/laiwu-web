@@ -62,7 +62,14 @@ export async function listWords(params: ListParams = {}): Promise<ListResult> {
 
   if (isSupabaseConfigured && supabase) {
     let query = supabase.from("words").select("*", { count: "exact" });
-    if (q) query = query.ilike("word", `%${q}%`);
+    if (q) {
+      // 词形 + JSONB 整段文本同时模糊匹配
+      // Supabase OR 语法用 `data::text.ilike.%xxx%` 在 PostgREST 中支持
+      const esc = q.replace(/[,()]/g, " ").trim();
+      query = query.or(
+        `word.ilike.%${esc}%,data::text.ilike.%${esc}%`,
+      );
+    }
     if (freq) query = query.eq("frequency_level", freq);
     if (pos && pos.length > 0) query = query.contains("pos_list", pos);
     if (hasSlang) query = query.eq("has_slang", true);
@@ -82,7 +89,19 @@ export async function listWords(params: ListParams = {}): Promise<ListResult> {
   if (q) {
     const qq = q.toLowerCase().trim();
     if (qq) {
-      filtered = filtered.filter((r) => r.word.toLowerCase().includes(qq));
+      // 扩展：词形 + 释义 + 例句一并搜索
+      filtered = filtered.filter((r) => {
+        if (r.word.toLowerCase().includes(qq)) return true;
+        const meanings = r.data.core_meanings ?? [];
+        if (meanings.some((m) => m.definition.toLowerCase().includes(qq)))
+          return true;
+        const example = r.data.example;
+        if (example?.text && example.text.toLowerCase().includes(qq))
+          return true;
+        if (example?.translation && example.translation.includes(qq))
+          return true;
+        return false;
+      });
     }
   }
   if (freq) filtered = filtered.filter((r) => r.frequency_level === freq);
@@ -117,6 +136,59 @@ export async function getWord(word: string): Promise<WordRow | null> {
   }
   const target = word.toLowerCase();
   return mockRows.find((r) => r.word.toLowerCase() === target) ?? null;
+}
+
+/** Levenshtein 编辑距离 */
+function levenshtein(a: string, b: string): number {
+  if (a === b) return 0;
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const dp = Array.from({ length: a.length + 1 }, (_, i) => i);
+  for (let j = 1; j <= b.length; j++) {
+    let prev = dp[0];
+    dp[0] = j;
+    for (let i = 1; i <= a.length; i++) {
+      const tmp = dp[i];
+      dp[i] =
+        a[i - 1] === b[j - 1]
+          ? prev
+          : 1 + Math.min(prev, dp[i], dp[i - 1]);
+      prev = tmp;
+    }
+  }
+  return dp[a.length];
+}
+
+/**
+ * 给定可能拼错的查询词，返回最相近的若干个真实词形。
+ * 排除完全相同的（认为是 0 距离 = 用户已经找到正确词）。
+ */
+export async function suggestWords(q: string, limit = 5): Promise<string[]> {
+  const qq = q.toLowerCase().trim();
+  if (!qq) return [];
+  const maxDist = Math.max(2, Math.floor(qq.length * 0.4));
+
+  let pool: string[];
+  if (isSupabaseConfigured && supabase) {
+    // 拉一个候选池（覆盖词形相近的词）；为了高效，
+    // 先用 ILIKE 拉前缀/包含命中作为大池，再 Levenshtein 精排
+    const prefix = qq.slice(0, 2);
+    const { data } = await supabase
+      .from("words")
+      .select("word")
+      .or(`word.ilike.${prefix}%,word.ilike.%${qq[0]}%`)
+      .limit(500);
+    pool = (data ?? []).map((r: { word: string }) => r.word);
+  } else {
+    pool = mockRows.map((r) => r.word);
+  }
+
+  return pool
+    .map((w) => ({ w, d: levenshtein(qq, w.toLowerCase()) }))
+    .filter((x) => x.d > 0 && x.d <= maxDist)
+    .sort((a, b) => a.d - b.d || a.w.length - b.w.length)
+    .slice(0, limit)
+    .map((x) => x.w);
 }
 
 export async function getRandomWords(limit = 10): Promise<WordRow[]> {

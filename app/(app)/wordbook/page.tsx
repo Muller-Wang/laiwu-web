@@ -1,4 +1,4 @@
-import { listWords } from "@/lib/words";
+import { listWords, suggestWords } from "@/lib/words";
 import {
   WordbookView,
   type WordbookSearchParams,
@@ -32,6 +32,12 @@ export default async function WordbookPage({
   const hasActiveFilters =
     !!q || !!freq || pos.length > 0 || hasSlang || hasMnemonic;
 
+  // 空结果且用户输了查询词 → 拉拼写纠错建议
+  let suggestions: string[] = [];
+  if (items.length === 0 && q) {
+    suggestions = await suggestWords(q, 5);
+  }
+
   return (
     <WordbookView
       items={items}
@@ -43,6 +49,7 @@ export default async function WordbookPage({
       pos={pos}
       hasSlang={hasSlang}
       hasMnemonic={hasMnemonic}
+      suggestions={suggestions}
     />
   );
 }

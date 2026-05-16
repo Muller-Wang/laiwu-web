@@ -1,24 +1,62 @@
 "use client";
 
-import { CalendarPlus, BookmarkCheck } from "lucide-react";
+import { CalendarPlus, Bookmark, BookmarkCheck } from "lucide-react";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { useToast } from "./toast";
 import { useT } from "./i18n-provider";
+import { isBookmarked, addBookmark, removeBookmark } from "@/lib/db";
 
-export function WordActions() {
+export function WordActions({ word }: { word: string }) {
   const { push } = useToast();
   const t = useT();
+  const [bookmarked, setBookmarked] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const b = await isBookmarked(word);
+        setBookmarked(b);
+      } catch {
+        /* noop */
+      }
+    })();
+  }, [word]);
+
+  const toggleBookmark = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      if (bookmarked) {
+        await removeBookmark(word);
+        setBookmarked(false);
+        push(t("bookmark.toastRemove"));
+      } else {
+        await addBookmark(word);
+        setBookmarked(true);
+        push(t("bookmark.toastAdd"));
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
       <motion.button
         whileTap={{ scale: 0.94 }}
         whileHover={{ scale: 1.02 }}
-        onClick={() => push(t("word.toast.mark"))}
-        className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white border border-[color:var(--color-border)] shadow-lg text-sm font-semibold text-[color:var(--color-text)] hover:border-brand-300"
+        disabled={busy}
+        onClick={toggleBookmark}
+        className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white border border-[color:var(--color-border)] shadow-lg text-sm font-semibold text-[color:var(--color-text)] hover:border-brand-300 disabled:opacity-60"
       >
-        <BookmarkCheck className="w-4 h-4 text-brand-600" />
-        {t("word.action.mark")}
+        {bookmarked ? (
+          <BookmarkCheck className="w-4 h-4 text-brand-600 fill-current" />
+        ) : (
+          <Bookmark className="w-4 h-4 text-brand-600" />
+        )}
+        {bookmarked ? t("bookmark.remove") : t("bookmark.add")}
       </motion.button>
       <motion.button
         whileTap={{ scale: 0.94 }}

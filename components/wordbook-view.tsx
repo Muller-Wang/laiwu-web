@@ -31,6 +31,7 @@ export function WordbookView({
   pos,
   hasSlang,
   hasMnemonic,
+  suggestions = [],
 }: {
   items: WordRow[];
   total: number;
@@ -41,6 +42,7 @@ export function WordbookView({
   pos: string[];
   hasSlang: boolean;
   hasMnemonic: boolean;
+  suggestions?: string[];
 }) {
   const t = useT();
 
@@ -147,10 +149,31 @@ export function WordbookView({
               <p className="text-[color:var(--color-text-muted)]">
                 {t("wordbook.empty.desc")}
               </p>
+
+              {/* 拼写纠错建议 */}
+              {suggestions.length > 0 && (
+                <div className="mt-6 max-w-md mx-auto">
+                  <div className="text-sm text-[color:var(--color-text-muted)] mb-3">
+                    {t("search.suggestion")}
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {suggestions.map((s) => (
+                      <Link
+                        key={s}
+                        href={`/wordbook?q=${encodeURIComponent(s)}`}
+                        className="px-4 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-semibold border border-brand-200 transition-colors"
+                      >
+                        {s}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {hasActiveFilters && (
                 <Link
                   href="/wordbook"
-                  className="mt-4 inline-block px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold transition-colors"
+                  className="mt-6 inline-block px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold transition-colors"
                 >
                   {t("wordbook.empty.clear")}
                 </Link>

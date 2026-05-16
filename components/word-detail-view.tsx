@@ -270,7 +270,7 @@ export function WordDetailView({ row }: { row: WordRow }) {
 
       <div className="h-32" />
 
-      <WordActions />
+      <WordActions word={row.word} />
     </div>
   );
 }
