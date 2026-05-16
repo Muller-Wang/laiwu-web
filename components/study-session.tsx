@@ -17,46 +17,53 @@ import {
 import type { WordRow } from "@/lib/supabase";
 import { safeGet, cn } from "@/lib/utils";
 import { WordSpeaker } from "./word-speaker";
+import { useT } from "./i18n-provider";
+import type { DictKey } from "@/lib/i18n/dict";
 
-const RATINGS = [
+type Rating = {
+  key: string;
+  labelKey: DictKey;
+  hintKey: DictKey;
+  color: string;
+  icon: typeof Frown;
+};
+
+const RATINGS: Rating[] = [
   {
     key: "forget",
-    label: "忘记",
+    labelKey: "session.rate.forget",
+    hintKey: "session.rate.forgetHint",
     color: "bg-rose-500 hover:bg-rose-600 shadow-rose-500/30",
-    border: "border-rose-200",
     icon: Frown,
-    hint: "明天再见",
   },
   {
     key: "hard",
-    label: "困难",
+    labelKey: "session.rate.hard",
+    hintKey: "session.rate.hardHint",
     color: "bg-orange-500 hover:bg-orange-600 shadow-orange-500/30",
-    border: "border-orange-200",
     icon: Meh,
-    hint: "10 分钟后",
   },
   {
     key: "good",
-    label: "良好",
+    labelKey: "session.rate.good",
+    hintKey: "session.rate.goodHint",
     color: "bg-blue-500 hover:bg-blue-600 shadow-blue-500/30",
-    border: "border-blue-200",
     icon: Smile,
-    hint: "明天",
   },
   {
     key: "easy",
-    label: "简单",
+    labelKey: "session.rate.easy",
+    hintKey: "session.rate.easyHint",
     color: "bg-brand-500 hover:bg-brand-600 shadow-brand-500/30",
-    border: "border-brand-200",
     icon: Sparkles,
-    hint: "4 天后",
   },
-] as const;
+];
 
 export function StudySession({ words }: { words: WordRow[] }) {
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [done, setDone] = useState(false);
+  const t = useT();
 
   const total = words.length;
   const current = words[idx];
@@ -78,7 +85,6 @@ export function StudySession({ words }: { words: WordRow[] }) {
   };
 
   if (done) return <CompletionScreen total={total} onRestart={restart} />;
-
   if (!current) return null;
 
   const def = safeGet<{ pos: string; definition: string } | undefined>(
@@ -97,7 +103,7 @@ export function StudySession({ words }: { words: WordRow[] }) {
           className="inline-flex items-center gap-1.5 text-sm text-[color:var(--color-text-muted)] hover:text-brand-600 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
-          返回计划
+          {t("session.back")}
         </Link>
         <div className="text-sm font-semibold text-[color:var(--color-text-muted)]">
           <span className="text-brand-700">{idx + 1}</span> / {total}
@@ -136,7 +142,7 @@ export function StudySession({ words }: { words: WordRow[] }) {
               style={{ backfaceVisibility: "hidden" }}
             >
               <div className="text-xs font-semibold text-[color:var(--color-text-muted)] mb-2 uppercase tracking-wider">
-                第 {idx + 1} 个
+                {t("session.cardIdx", { idx: idx + 1 })}
               </div>
               <h2 className="text-6xl md:text-8xl font-extrabold tracking-tight">
                 {current.word}
@@ -150,13 +156,13 @@ export function StudySession({ words }: { words: WordRow[] }) {
                     onClick={(e) => e.stopPropagation()}
                     className="inline-block"
                   >
-                    <WordSpeaker text={current.word} label="发音" />
+                    <WordSpeaker text={current.word} label={t("word.speak")} />
                   </span>
                 </div>
               )}
               <div className="mt-10 inline-flex items-center gap-1.5 text-sm text-brand-600 font-medium px-4 py-2 rounded-xl bg-brand-50">
                 <RotateCw className="w-4 h-4" />
-                点击查看释义
+                {t("session.flipHint")}
               </div>
             </button>
 
@@ -232,8 +238,8 @@ export function StudySession({ words }: { words: WordRow[] }) {
                 )}
               >
                 <r.icon className="w-5 h-5" />
-                <div>{r.label}</div>
-                <div className="text-xs font-medium opacity-80">{r.hint}</div>
+                <div>{t(r.labelKey)}</div>
+                <div className="text-xs font-medium opacity-80">{t(r.hintKey)}</div>
               </motion.button>
             ))}
           </motion.div>
@@ -242,16 +248,13 @@ export function StudySession({ words }: { words: WordRow[] }) {
 
       {!flipped && (
         <p className="mt-8 text-center text-sm text-[color:var(--color-text-muted)]">
-          先回忆这个单词的意思，再翻面对照
+          {t("session.recallHint")}
         </p>
       )}
     </div>
   );
 }
 
-// ============================================================
-// 完成态
-// ============================================================
 function CompletionScreen({
   total,
   onRestart,
@@ -259,6 +262,7 @@ function CompletionScreen({
   total: number;
   onRestart: () => void;
 }) {
+  const t = useT();
   const pieces = useMemo(
     () =>
       Array.from({ length: 30 }, (_, i) => ({
@@ -313,7 +317,7 @@ function CompletionScreen({
         transition={{ delay: 0.2 }}
         className="text-4xl md:text-5xl font-extrabold tracking-tight"
       >
-        今日完成！
+        {t("session.done.title")}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0, y: 10 }}
@@ -321,7 +325,7 @@ function CompletionScreen({
         transition={{ delay: 0.3 }}
         className="mt-3 text-[color:var(--color-text-muted)] text-lg"
       >
-        你刚刚学习了 {total} 个单词，连续打卡 +1 🔥
+        {t("session.done.desc", { total })}
       </motion.p>
 
       <motion.div
@@ -335,14 +339,14 @@ function CompletionScreen({
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white font-semibold shadow-lg shadow-brand-500/30 transition-all"
         >
           <Home className="w-4 h-4" />
-          返回计划
+          {t("session.done.back")}
         </Link>
         <button
           onClick={onRestart}
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white border border-[color:var(--color-border)] hover:border-brand-300 font-semibold transition-all"
         >
           <Repeat className="w-4 h-4" />
-          再来一组
+          {t("session.done.restart")}
         </button>
       </motion.div>
     </div>

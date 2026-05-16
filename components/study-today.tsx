@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, RefreshCw, ArrowRight, Play } from "lucide-react";
 import type { WordRow } from "@/lib/supabase";
 import { safeGet, cn } from "@/lib/utils";
+import { useT } from "./i18n-provider";
 
 export function StudyToday({
   newWords,
@@ -16,17 +17,18 @@ export function StudyToday({
 }) {
   const [tab, setTab] = useState<"new" | "review">("new");
   const list = tab === "new" ? newWords : reviewWords;
+  const t = useT();
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">今日清单</h2>
+        <h2 className="text-xl font-bold">{t("study.today.title")}</h2>
         <Link
           href="/study/session"
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold shadow-md shadow-brand-500/30 hover:shadow-lg transition-all"
         >
           <Play className="w-4 h-4 fill-current" />
-          开始今日学习
+          {t("study.today.start")}
         </Link>
       </div>
 
@@ -35,7 +37,7 @@ export function StudyToday({
           active={tab === "new"}
           onClick={() => setTab("new")}
           icon={<Sparkles className="w-4 h-4" />}
-          label="新学词"
+          label={t("study.today.tabNew")}
           count={newWords.length}
           activeColor="brand"
         />
@@ -43,7 +45,7 @@ export function StudyToday({
           active={tab === "review"}
           onClick={() => setTab("review")}
           icon={<RefreshCw className="w-4 h-4" />}
-          label="待复习"
+          label={t("study.today.tabReview")}
           count={reviewWords.length}
           activeColor="accent"
         />

@@ -4,12 +4,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback, useTransition } from "react";
 import { Search, X, SlidersHorizontal, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "./i18n-provider";
+import type { DictKey } from "@/lib/i18n/dict";
 
-const FREQ_OPTIONS = [
-  { value: "", label: "全部词频" },
-  { value: "1", label: "高频" },
-  { value: "2", label: "中频" },
-  { value: "3", label: "低频" },
+const FREQ_OPTIONS: Array<{ value: string; labelKey: DictKey }> = [
+  { value: "", labelKey: "wordbook.freqAll" },
+  { value: "1", labelKey: "wordbook.freq1" },
+  { value: "2", labelKey: "wordbook.freq2" },
+  { value: "3", labelKey: "wordbook.freq3" },
 ];
 
 const POS_OPTIONS = ["n.", "v.", "adj.", "adv."];
@@ -29,6 +31,7 @@ export function SearchBar({ initialQ = "" }: { initialQ?: string }) {
   const [, startTransition] = useTransition();
   const [q, setQ] = useState(initialQ);
   const debounced = useDebounce(q, 300);
+  const t = useT();
 
   // 同步到 URL
   useEffect(() => {
@@ -50,14 +53,14 @@ export function SearchBar({ initialQ = "" }: { initialQ?: string }) {
         type="text"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="搜索单词、释义、例句…"
+        placeholder={t("wordbook.searchPlaceholder")}
         className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white border border-[color:var(--color-border)] focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none text-base font-medium transition-all"
       />
       {q && (
         <button
           onClick={() => setQ("")}
           className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-[color:var(--color-surface-2)]"
-          aria-label="清空"
+          aria-label={t("wordbook.clearSearch")}
         >
           <X className="w-4 h-4 text-[color:var(--color-text-muted)]" />
         </button>
@@ -79,6 +82,7 @@ export function FilterPanel({ initial }: { initial: FilterValue }) {
   const [, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [val, setVal] = useState<FilterValue>(initial);
+  const t = useT();
 
   const apply = useCallback(
     (next: FilterValue) => {
@@ -145,7 +149,7 @@ export function FilterPanel({ initial }: { initial: FilterValue }) {
         >
           <span className="flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4" />
-            筛选
+            {t("wordbook.filter")}
             {activeCount > 0 && (
               <span className="px-2 py-0.5 rounded-full bg-brand-500 text-white text-xs">
                 {activeCount}
@@ -153,7 +157,7 @@ export function FilterPanel({ initial }: { initial: FilterValue }) {
             )}
           </span>
           <span className="text-sm text-[color:var(--color-text-muted)]">
-            {open ? "收起" : "展开"}
+            {open ? t("wordbook.filterCollapse") : t("wordbook.filterExpand")}
           </span>
         </button>
         {open && (
@@ -185,19 +189,20 @@ function FilterBody({
   reset: () => void;
   activeCount: number;
 }) {
+  const t = useT();
   return (
     <div className="p-5 rounded-2xl bg-white border border-[color:var(--color-border)] space-y-5">
       <div className="flex items-center justify-between">
         <h3 className="font-bold flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4" />
-          筛选
+          {t("wordbook.filter")}
         </h3>
         {activeCount > 0 && (
           <button
             onClick={reset}
             className="text-xs text-brand-600 hover:underline font-medium"
           >
-            清空
+            {t("wordbook.filterClear")}
           </button>
         )}
       </div>
@@ -205,7 +210,7 @@ function FilterBody({
       {/* 词频 */}
       <div>
         <div className="text-xs font-semibold text-[color:var(--color-text-muted)] mb-2 uppercase tracking-wide">
-          词频
+          {t("wordbook.freq")}
         </div>
         <div className="grid grid-cols-2 gap-1.5">
           {FREQ_OPTIONS.map((opt) => {
@@ -221,7 +226,7 @@ function FilterBody({
                     : "bg-[color:var(--color-surface-2)] hover:bg-brand-50 text-[color:var(--color-text)]",
                 )}
               >
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             );
           })}
@@ -231,7 +236,7 @@ function FilterBody({
       {/* 词性 */}
       <div>
         <div className="text-xs font-semibold text-[color:var(--color-text-muted)] mb-2 uppercase tracking-wide">
-          词性
+          {t("wordbook.pos")}
         </div>
         <div className="flex flex-wrap gap-1.5">
           {POS_OPTIONS.map((p) => {
@@ -257,12 +262,12 @@ function FilterBody({
       {/* 开关组 */}
       <div className="space-y-2">
         <Toggle
-          label="🔥 含熟词生义"
+          label={t("wordbook.filterSlang")}
           checked={val.slang}
           onChange={(v) => update({ slang: v })}
         />
         <Toggle
-          label="💡 含助记法"
+          label={t("wordbook.filterMn")}
           checked={val.mn}
           onChange={(v) => update({ mn: v })}
         />

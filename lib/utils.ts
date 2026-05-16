@@ -27,13 +27,20 @@ export function safeGet<T = unknown>(
   }
 }
 
-export function freqLabel(level: number): { text: string; color: string } {
+/**
+ * 返回词频徽章的样式与 i18n key。
+ * 调用方负责 t(textKey) 翻译。
+ */
+export function freqStyle(level: number): {
+  textKey: "wordbook.freq1" | "wordbook.freq2" | "wordbook.freq3";
+  color: string;
+} {
   switch (level) {
     case 1:
-      return { text: "高频", color: "var(--color-freq-1)" };
+      return { textKey: "wordbook.freq1", color: "var(--color-freq-1)" };
     case 2:
-      return { text: "中频", color: "var(--color-freq-2)" };
+      return { textKey: "wordbook.freq2", color: "var(--color-freq-2)" };
     default:
-      return { text: "低频", color: "var(--color-freq-3)" };
+      return { textKey: "wordbook.freq3", color: "var(--color-freq-3)" };
   }
 }

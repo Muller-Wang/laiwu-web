@@ -2,6 +2,7 @@
 
 import CalendarHeatmap from "react-calendar-heatmap";
 import { useEffect, useMemo, useState } from "react";
+import { useT } from "./i18n-provider";
 
 // 用确定性 PRNG 避免 hydration mismatch
 function mulberry32(seed: number) {
@@ -15,6 +16,7 @@ function mulberry32(seed: number) {
 
 export function StudyHeatmap() {
   const [mounted, setMounted] = useState(false);
+  const t = useT();
 
   useEffect(() => setMounted(true), []);
 
@@ -39,15 +41,15 @@ export function StudyHeatmap() {
   return (
     <div className="rounded-2xl bg-white border border-[color:var(--color-border)] p-5 md:p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold">过去 90 天学习记录</h3>
+        <h3 className="text-sm font-bold">{t("study.heatmap.title")}</h3>
         <div className="flex items-center gap-1.5 text-xs text-[color:var(--color-text-muted)]">
-          <span>少</span>
+          <span>{t("study.heatmap.less")}</span>
           <span className="w-3 h-3 rounded-sm bg-[#ebedf0]" />
           <span className="w-3 h-3 rounded-sm bg-brand-200" />
           <span className="w-3 h-3 rounded-sm bg-brand-400" />
           <span className="w-3 h-3 rounded-sm bg-brand-600" />
           <span className="w-3 h-3 rounded-sm bg-brand-800" />
-          <span>多</span>
+          <span>{t("study.heatmap.more")}</span>
         </div>
       </div>
       <div className="heatmap-wrapper">
