@@ -10,6 +10,7 @@ export const dict = {
     // ====== 导航 ======
     "nav.wordbook": "词库",
     "nav.study": "学习计划",
+    "nav.quiz": "测验",
     "nav.about": "关于",
     "nav.enterWordbook": "进入词库",
     "nav.menu": "菜单",
@@ -314,6 +315,7 @@ export const dict = {
     // ====== Nav ======
     "nav.wordbook": "Wordbook",
     "nav.study": "Study Plan",
+    "nav.quiz": "Quiz",
     "nav.about": "About",
     "nav.enterWordbook": "Open Wordbook",
     "nav.menu": "Menu",
