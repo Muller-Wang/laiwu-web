@@ -10,6 +10,7 @@ import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { ToastProvider } from "@/components/toast";
+import { I18nProvider } from "@/components/i18n-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -46,11 +47,13 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-[color:var(--color-bg)] text-[color:var(--color-text)] font-sans">
-        <ToastProvider>
-          <Nav />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
-        </ToastProvider>
+        <I18nProvider>
+          <ToastProvider>
+            <Nav />
+            <main className="flex-1 flex flex-col">{children}</main>
+            <Footer />
+          </ToastProvider>
+        </I18nProvider>
       </body>
     </html>
   );

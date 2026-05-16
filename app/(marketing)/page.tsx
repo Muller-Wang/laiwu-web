@@ -11,6 +11,8 @@ import {
   Users,
   Newspaper,
 } from "lucide-react";
+import { useT } from "@/components/i18n-provider";
+import type { DictKey } from "@/lib/i18n/dict";
 
 // ============================================================
 // 漂浮单词背景
@@ -97,6 +99,51 @@ function CountUp({
 // 主页面
 // ============================================================
 export default function HomePage() {
+  const t = useT();
+
+  const STATS: Array<{ to: number; suffix: string; labelKey: DictKey }> = [
+    { to: 7000, suffix: "+", labelKey: "home.stats.words" },
+    { to: 20000, suffix: "+", labelKey: "home.stats.examples" },
+    { to: 85, suffix: "%", labelKey: "home.stats.fresh" },
+  ];
+
+  const INNOVATIONS: Array<{
+    icon: typeof Newspaper;
+    color: string;
+    titleKey: DictKey;
+    descKey: DictKey;
+    badgeKey: DictKey;
+  }> = [
+    {
+      icon: Newspaper,
+      color: "from-blue-400 to-blue-600",
+      titleKey: "home.inn1.title",
+      descKey: "home.inn1.desc",
+      badgeKey: "home.inn1.badge",
+    },
+    {
+      icon: Lightbulb,
+      color: "from-amber-400 to-orange-500",
+      titleKey: "home.inn2.title",
+      descKey: "home.inn2.desc",
+      badgeKey: "home.inn2.badge",
+    },
+    {
+      icon: Flame,
+      color: "from-rose-400 to-pink-600",
+      titleKey: "home.inn3.title",
+      descKey: "home.inn3.desc",
+      badgeKey: "home.inn3.badge",
+    },
+    {
+      icon: Users,
+      color: "from-emerald-400 to-teal-600",
+      titleKey: "home.inn4.title",
+      descKey: "home.inn4.desc",
+      badgeKey: "home.inn4.badge",
+    },
+  ];
+
   return (
     <div className="flex-1">
       {/* ============ HERO ============ */}
@@ -119,7 +166,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-sm font-medium mb-6"
           >
             <Sparkles className="w-4 h-4" />
-            为雅思考生与海外华人打造
+            {t("home.badge")}
           </motion.div>
 
           <motion.h1
@@ -128,9 +175,9 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.05]"
           >
-            来悟
+            {t("home.brand")}
             <span className="bg-gradient-to-r from-brand-500 via-brand-600 to-brand-700 bg-clip-text text-transparent">
-              单词书
+              {t("home.brandSuffix")}
             </span>
           </motion.h1>
 
@@ -140,7 +187,7 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-6 text-xl md:text-2xl text-[color:var(--color-text-muted)] font-medium"
           >
-            中国本土版柯林斯词典
+            {t("home.subtitle")}
           </motion.p>
 
           <motion.p
@@ -149,9 +196,7 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-4 text-base md:text-lg text-[color:var(--color-text-muted)] max-w-2xl mx-auto leading-relaxed"
           >
-            AI 驱动的 7000 词雅思单词书。
-            <br className="hidden md:block" />
-            鲜活例句 · 多元巧记 · 熟词生义 —— 让记单词从机械重复走向真正理解。
+            {t("home.intro")}
           </motion.p>
 
           <motion.div
@@ -164,14 +209,14 @@ export default function HomePage() {
               href="/wordbook"
               className="group inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white text-base font-semibold shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 transition-all hover:-translate-y-0.5"
             >
-              进入词库
+              {t("home.cta.enter")}
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
               href="/about"
               className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-white hover:bg-[color:var(--color-surface-2)] text-[color:var(--color-text)] text-base font-semibold border border-[color:var(--color-border)] shadow-sm hover:shadow-md transition-all"
             >
-              了解项目背景
+              {t("home.cta.about")}
             </Link>
           </motion.div>
         </div>
@@ -180,11 +225,7 @@ export default function HomePage() {
       {/* ============ 数字 ============ */}
       <section className="py-20 px-4 border-y border-[color:var(--color-border)] bg-white">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-          {[
-            { to: 7000, suffix: "+", label: "核心雅思词汇" },
-            { to: 20000, suffix: "+", label: "AI 仿写鲜活例句" },
-            { to: 85, suffix: "%", label: "近两年语料占比" },
-          ].map((stat, i) => (
+          {STATS.map((stat, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
@@ -196,7 +237,7 @@ export default function HomePage() {
                 <CountUp to={stat.to} suffix={stat.suffix} />
               </div>
               <div className="mt-3 text-sm md:text-base text-[color:var(--color-text-muted)] font-medium">
-                {stat.label}
+                {t(stat.labelKey)}
               </div>
             </motion.div>
           ))}
@@ -214,44 +255,15 @@ export default function HomePage() {
             className="text-center mb-14"
           >
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-              我们用 AI 重新定义单词书
+              {t("home.section.title")}
             </h2>
             <p className="mt-4 text-lg text-[color:var(--color-text-muted)] max-w-2xl mx-auto">
-              四个维度，让 7000 词从"背得快"变成"用得好"
+              {t("home.section.subtitle")}
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              {
-                icon: Newspaper,
-                color: "from-blue-400 to-blue-600",
-                title: "实时鲜活例句",
-                desc: "Grok3 模型自动抓取《经济学人》《时代周刊》等权威期刊 2022-2024 年最新文章，新鲜度高达 85%，告别十年前的过时语料。",
-                badge: "技术创新",
-              },
-              {
-                icon: Lightbulb,
-                color: "from-amber-400 to-orange-500",
-                title: "多元巧记法",
-                desc: "谐音法、象形法、词根词缀法、故事联想法四大记忆策略，由 DeepSeek 智能匹配。用户实测记忆效率提升 40%。",
-                badge: "方法创新",
-              },
-              {
-                icon: Flame,
-                color: "from-rose-400 to-pink-600",
-                title: "熟词生义标注",
-                desc: "国内首创系统性熟词生义体系，1200+ 典型案例覆盖雅思高频易错点和留学生活场景。lit、sick、goat 都不再是字面意思。",
-                badge: "内容创新",
-              },
-              {
-                icon: Users,
-                color: "from-emerald-400 to-teal-600",
-                title: "跨学科专业力",
-                desc: "语言学专业逻辑 × AI 技术应用 × 产品思维的有机融合。横跨语言学、计算机科学、英语口译与工商管理的跨领域协作。",
-                badge: "团队优势",
-              },
-            ].map((card, i) => (
+            {INNOVATIONS.map((card, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
@@ -268,12 +280,12 @@ export default function HomePage() {
                     <card.icon className="w-7 h-7 text-white" strokeWidth={2.2} />
                   </div>
                   <span className="px-3 py-1 rounded-full bg-[color:var(--color-surface-2)] text-xs font-medium text-[color:var(--color-text-muted)]">
-                    {card.badge}
+                    {t(card.badgeKey)}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold mb-3">{card.title}</h3>
+                <h3 className="text-xl font-bold mb-3">{t(card.titleKey)}</h3>
                 <p className="text-[color:var(--color-text-muted)] leading-relaxed text-[15px]">
-                  {card.desc}
+                  {t(card.descKey)}
                 </p>
               </motion.div>
             ))}
@@ -290,22 +302,21 @@ export default function HomePage() {
           transition={{ duration: 0.6 }}
           className="max-w-5xl mx-auto rounded-3xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 p-12 md:p-16 text-center text-white shadow-2xl shadow-brand-500/20 relative overflow-hidden"
         >
-          {/* 装饰光斑 */}
           <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
           <div className="absolute bottom-0 right-0 w-72 h-72 bg-accent-300/20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
 
           <div className="relative z-10">
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-              准备好开始你的雅思词汇之旅了吗？
+              {t("home.cta2.title")}
             </h2>
             <p className="mt-4 text-lg text-white/85 max-w-xl mx-auto">
-              7000 个单词在等你 · 现在就开始
+              {t("home.cta2.subtitle")}
             </p>
             <Link
               href="/wordbook"
               className="mt-8 group inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white text-brand-700 font-bold text-base shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all"
             >
-              立即进入词库
+              {t("home.cta2.button")}
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>

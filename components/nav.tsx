@@ -6,16 +6,20 @@ import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, BookOpen } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useT } from "./i18n-provider";
+import { LangSwitcher } from "./lang-switcher";
+import type { DictKey } from "@/lib/i18n/dict";
 
-const NAV_ITEMS = [
-  { href: "/wordbook", label: "词库" },
-  { href: "/study", label: "学习计划" },
-  { href: "/about", label: "关于" },
+const NAV_ITEMS: Array<{ href: string; key: DictKey }> = [
+  { href: "/wordbook", key: "nav.wordbook" },
+  { href: "/study", key: "nav.study" },
+  { href: "/about", key: "nav.about" },
 ];
 
 export function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const t = useT();
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[color:var(--color-bg)]/85 backdrop-blur-md border-b border-[color:var(--color-border)]">
@@ -29,7 +33,10 @@ export function Nav() {
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
             <BookOpen className="w-5 h-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="font-bold text-lg tracking-tight">来悟单词书</span>
+          <span className="font-bold text-lg tracking-tight">
+            {t("home.brand")}
+            {t("home.brandSuffix")}
+          </span>
         </Link>
 
         {/* 桌面菜单 */}
@@ -49,7 +56,7 @@ export function Nav() {
                     : "text-[color:var(--color-text)] hover:bg-[color:var(--color-surface-2)]",
                 )}
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             );
           })}
@@ -57,18 +64,24 @@ export function Nav() {
             href="/wordbook"
             className="ml-3 px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold transition-colors shadow-sm hover:shadow-md"
           >
-            进入词库
+            {t("nav.enterWordbook")}
           </Link>
+          <div className="ml-2">
+            <LangSwitcher />
+          </div>
         </nav>
 
-        {/* 移动端汉堡 */}
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="md:hidden p-2 rounded-lg hover:bg-[color:var(--color-surface-2)]"
-          aria-label="menu"
-        >
-          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        {/* 移动端：语言切换 + 汉堡 */}
+        <div className="md:hidden flex items-center gap-2">
+          <LangSwitcher compact />
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="p-2 rounded-lg hover:bg-[color:var(--color-surface-2)]"
+            aria-label={t("nav.menu")}
+          >
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       {/* 移动端展开层 */}
@@ -96,7 +109,7 @@ export function Nav() {
                         : "hover:bg-[color:var(--color-surface-2)]",
                     )}
                   >
-                    {item.label}
+                    {t(item.key)}
                   </Link>
                 );
               })}
@@ -105,7 +118,7 @@ export function Nav() {
                 onClick={() => setOpen(false)}
                 className="mt-2 px-4 py-3 rounded-xl bg-brand-500 text-white text-center font-semibold"
               >
-                进入词库
+                {t("nav.enterWordbook")}
               </Link>
             </nav>
           </motion.div>
