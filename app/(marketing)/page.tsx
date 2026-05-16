@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -148,14 +149,30 @@ export default function HomePage() {
     <div className="flex-1">
       {/* ============ HERO ============ */}
       <section className="relative min-h-[88vh] flex items-center justify-center px-4 overflow-hidden">
-        {/* 渐变背景 */}
+        {/* 渐变背景（最底层）*/}
         <div
-          className="absolute inset-0 -z-10"
+          className="absolute inset-0 -z-20"
           style={{
             background:
               "radial-gradient(ellipse at top, var(--color-brand-100), transparent 60%), radial-gradient(ellipse at bottom right, var(--color-accent-100), transparent 50%)",
           }}
         />
+
+        {/* 多语种字海封面（淡水印背景层）*/}
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 opacity-[0.10] pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_0%,transparent_70%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,black_0%,transparent_70%)]"
+        >
+          <Image
+            src="/cover-v2.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center select-none"
+          />
+        </div>
+
         <FloatingWords />
 
         <div className="max-w-5xl mx-auto text-center relative z-10 py-20">
