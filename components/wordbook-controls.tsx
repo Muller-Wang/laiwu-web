@@ -1,11 +1,23 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useCallback, useTransition } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useTransition,
+  useRef,
+} from "react";
 import { Search, X, SlidersHorizontal, Check } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useT } from "./i18n-provider";
 import type { DictKey } from "@/lib/i18n/dict";
+import {
+  loadIndex,
+  searchLocal,
+  type IndexEntry,
+} from "@/lib/word-index";
 
 const FREQ_OPTIONS: Array<{ value: string; labelKey: DictKey }> = [
   { value: "", labelKey: "wordbook.freqAll" },
@@ -33,7 +45,13 @@ export function SearchBar({ initialQ = "" }: { initialQ?: string }) {
   const debounced = useDebounce(q, 300);
   const t = useT();
 
-  // 同步到 URL
+  // 客户端预加载的词形索引
+  const [index, setIndex] = useState<IndexEntry[] | null>(null);
+  const [suggestions, setSuggestions] = useState<IndexEntry[]>([]);
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // 同步到 URL（debounced）
   useEffect(() => {
     const current = new URLSearchParams(searchParams.toString());
     const cur = current.get("q") ?? "";
@@ -46,24 +64,101 @@ export function SearchBar({ initialQ = "" }: { initialQ?: string }) {
     });
   }, [debounced, router, searchParams]);
 
+  // 首次聚焦时 lazy load 索引
+  const ensureIndex = useCallback(async () => {
+    if (index || typeof window === "undefined") return;
+    try {
+      const data = await loadIndex();
+      setIndex(data);
+    } catch (e) {
+      console.warn("[search] failed to load word index", e);
+    }
+  }, [index]);
+
+  // 输入变化时本地搜索（0ms）
+  useEffect(() => {
+    if (!index || !q.trim()) {
+      setSuggestions([]);
+      return;
+    }
+    setSuggestions(searchLocal(q, index, 8));
+  }, [q, index]);
+
+  // 点击外部关闭下拉
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
   return (
-    <div className="relative">
-      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[color:var(--color-text-muted)] pointer-events-none" />
+    <div className="relative" ref={wrapperRef}>
+      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[color:var(--color-text-muted)] pointer-events-none z-10" />
       <input
         type="text"
         value={q}
         onChange={(e) => setQ(e.target.value)}
+        onFocus={() => {
+          ensureIndex();
+          setOpen(true);
+        }}
         placeholder={t("wordbook.searchPlaceholder")}
         className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white border border-[color:var(--color-border)] focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none text-base font-medium transition-all"
       />
       {q && (
         <button
-          onClick={() => setQ("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-[color:var(--color-surface-2)]"
+          onClick={() => {
+            setQ("");
+            setSuggestions([]);
+          }}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-[color:var(--color-surface-2)] z-10"
           aria-label={t("wordbook.clearSearch")}
         >
           <X className="w-4 h-4 text-[color:var(--color-text-muted)]" />
         </button>
+      )}
+
+      {/* 下拉建议 */}
+      {open && suggestions.length > 0 && (
+        <div className="absolute left-0 right-0 top-full mt-2 z-30 rounded-2xl bg-white border border-[color:var(--color-border)] shadow-xl overflow-hidden">
+          {suggestions.map((s) => (
+            <Link
+              key={s.w}
+              href={`/word/${encodeURIComponent(s.w)}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-brand-50 transition-colors border-b border-[color:var(--color-border)] last:border-b-0"
+            >
+              <span className="font-bold text-base text-[color:var(--color-text)]">
+                {s.w}
+              </span>
+              {s.d && (
+                <span className="text-sm text-[color:var(--color-text-muted)] truncate">
+                  {s.d}
+                </span>
+              )}
+              <span
+                className={cn(
+                  "ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold text-white shrink-0",
+                  s.f === 1
+                    ? "bg-rose-500"
+                    : s.f === 2
+                      ? "bg-amber-500"
+                      : "bg-gray-400",
+                )}
+              >
+                {s.f === 1 ? "高频" : s.f === 2 ? "中频" : "低频"}
+              </span>
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   );

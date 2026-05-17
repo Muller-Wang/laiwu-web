@@ -290,3 +290,108 @@ export async function listBookmarks(): Promise<BookmarkRow[]> {
   const all = await db.getAll("bookmarks");
   return all.sort((a, b) => b.added_at - a.added_at);
 }
+
+// ============================================================
+// 数据导出 / 导入
+// ============================================================
+
+export type BackupBundle = {
+  version: 1;
+  exported_at: number;
+  progress: ProgressRow[];
+  sessions: SessionRow[];
+  plans: PlanRow[];
+  wrong_words: WrongWordRow[];
+  bookmarks: BookmarkRow[];
+};
+
+export async function exportAllData(): Promise<BackupBundle> {
+  const db = await getDB();
+  const [progress, sessions, plans, wrong_words, bookmarks] = await Promise.all([
+    db.getAll("progress"),
+    db.getAll("sessions"),
+    db.getAll("plans"),
+    db.getAll("wrong_words"),
+    db.getAll("bookmarks"),
+  ]);
+  return {
+    version: 1,
+    exported_at: Date.now(),
+    progress,
+    sessions,
+    plans,
+    wrong_words,
+    bookmarks,
+  };
+}
+
+/** 导入 bundle。merge 模式（默认）保留旧数据 + 覆盖同 key；replace 模式清空旧数据再写入 */
+export async function importBundle(
+  bundle: BackupBundle,
+  mode: "merge" | "replace" = "merge",
+): Promise<{ counts: Record<string, number> }> {
+  if (bundle.version !== 1) {
+    throw new Error(`unsupported backup version: ${bundle.version}`);
+  }
+  const db = await getDB();
+
+  if (mode === "replace") {
+    const tx = db.transaction(
+      ["progress", "sessions", "plans", "wrong_words", "bookmarks"],
+      "readwrite",
+    );
+    await Promise.all([
+      tx.objectStore("progress").clear(),
+      tx.objectStore("sessions").clear(),
+      tx.objectStore("plans").clear(),
+      tx.objectStore("wrong_words").clear(),
+      tx.objectStore("bookmarks").clear(),
+    ]);
+    await tx.done;
+  }
+
+  // 写入分批
+  const tx2 = db.transaction(
+    ["progress", "sessions", "plans", "wrong_words", "bookmarks"],
+    "readwrite",
+  );
+  for (const r of bundle.progress) tx2.objectStore("progress").put(r);
+  for (const r of bundle.sessions) {
+    // 让 IDB 重新生成 id
+    const { id: _omit, ...rest } = r;
+    tx2.objectStore("sessions").add(rest as SessionRow);
+  }
+  for (const r of bundle.plans) {
+    const { id: _omit, ...rest } = r;
+    tx2.objectStore("plans").add(rest as PlanRow);
+  }
+  for (const r of bundle.wrong_words) tx2.objectStore("wrong_words").put(r);
+  for (const r of bundle.bookmarks) tx2.objectStore("bookmarks").put(r);
+  await tx2.done;
+
+  return {
+    counts: {
+      progress: bundle.progress.length,
+      sessions: bundle.sessions.length,
+      plans: bundle.plans.length,
+      wrong_words: bundle.wrong_words.length,
+      bookmarks: bundle.bookmarks.length,
+    },
+  };
+}
+
+export async function clearAllData() {
+  const db = await getDB();
+  const tx = db.transaction(
+    ["progress", "sessions", "plans", "wrong_words", "bookmarks"],
+    "readwrite",
+  );
+  await Promise.all([
+    tx.objectStore("progress").clear(),
+    tx.objectStore("sessions").clear(),
+    tx.objectStore("plans").clear(),
+    tx.objectStore("wrong_words").clear(),
+    tx.objectStore("bookmarks").clear(),
+  ]);
+  await tx.done;
+}

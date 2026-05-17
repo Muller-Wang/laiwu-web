@@ -6,10 +6,13 @@ import { useEffect, useState } from "react";
 import { useToast } from "./toast";
 import { useT } from "./i18n-provider";
 import { isBookmarked, addBookmark, removeBookmark } from "@/lib/db";
+import { ShareCardButton } from "./share-card";
+import type { WordRow } from "@/lib/supabase";
 
-export function WordActions({ word }: { word: string }) {
+export function WordActions({ row }: { row: WordRow }) {
   const { push } = useToast();
   const t = useT();
+  const word = row.word;
   const [bookmarked, setBookmarked] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -44,6 +47,8 @@ export function WordActions({ word }: { word: string }) {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+      <ShareCardButton row={row} />
+
       <motion.button
         whileTap={{ scale: 0.94 }}
         whileHover={{ scale: 1.02 }}

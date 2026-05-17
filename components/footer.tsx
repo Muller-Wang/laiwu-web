@@ -51,8 +51,18 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/themes" className="hover:text-brand-600 transition-colors">
+                  主题词包
+                </Link>
+              </li>
+              <li>
                 <Link href="/bookmarks" className="hover:text-brand-600 transition-colors">
                   {t("bookmark.page.title")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/settings" className="hover:text-brand-600 transition-colors">
+                  数据与设置
                 </Link>
               </li>
               <li>

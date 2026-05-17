@@ -191,6 +191,20 @@ export async function suggestWords(q: string, limit = 5): Promise<string[]> {
     .map((x) => x.w);
 }
 
+/** 按词形列表批量查询（用于主题词包、收藏夹等场景） */
+export async function listByWords(words: string[]): Promise<WordRow[]> {
+  if (words.length === 0) return [];
+  if (isSupabaseConfigured && supabase) {
+    const { data } = await supabase
+      .from("words")
+      .select("*")
+      .in("word", words);
+    return (data as WordRow[]) ?? [];
+  }
+  const set = new Set(words.map((w) => w.toLowerCase()));
+  return mockRows.filter((r) => set.has(r.word.toLowerCase()));
+}
+
 export async function getRandomWords(limit = 10): Promise<WordRow[]> {
   if (isSupabaseConfigured && supabase) {
     const { data } = await supabase

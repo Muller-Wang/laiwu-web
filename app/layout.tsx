@@ -11,6 +11,7 @@ import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { ToastProvider } from "@/components/toast";
 import { I18nProvider } from "@/components/i18n-provider";
+import { SWRegister } from "@/components/sw-register";
 
 export const metadata: Metadata = {
   title: {
@@ -54,6 +55,7 @@ export default function RootLayout({
             <Footer />
           </ToastProvider>
         </I18nProvider>
+        <SWRegister />
       </body>
     </html>
   );
