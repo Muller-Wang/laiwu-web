@@ -63,12 +63,9 @@ export async function listWords(params: ListParams = {}): Promise<ListResult> {
   if (isSupabaseConfigured && supabase) {
     let query = supabase.from("words").select("*", { count: "exact" });
     if (q) {
-      // 词形 + JSONB 整段文本同时模糊匹配
-      // Supabase OR 语法用 `data::text.ilike.%xxx%` 在 PostgREST 中支持
+      // 仅按词形模糊匹配（PostgREST 对 JSONB::text cast 支持不稳，已退回 word ilike）
       const esc = q.replace(/[,()]/g, " ").trim();
-      query = query.or(
-        `word.ilike.%${esc}%,data::text.ilike.%${esc}%`,
-      );
+      query = query.or(`word.ilike.%${esc}%`);
     }
     if (freq) query = query.eq("frequency_level", freq);
     if (pos && pos.length > 0) query = query.contains("pos_list", pos);
